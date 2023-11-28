@@ -102,7 +102,7 @@ pos_am_columns = [col for col in positive_normalized_data.columns if col.startsw
 pos_fc_columns = [col for col in positive_normalized_data.columns if col.startswith('FC')]
 pos_mc_columns = [col for col in positive_normalized_data.columns if col.startswith('MC')]
 
-# Calculating the mean for each housekeeping and negative group
+# Calculating the mean for each group
 grouped_data = pd.DataFrame({
     'Code Class': clean_miRNAs['Code Class'],
     'Name': clean_miRNAs['Name'],
