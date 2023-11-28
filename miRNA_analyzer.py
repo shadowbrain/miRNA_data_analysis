@@ -104,9 +104,9 @@ pos_mc_columns = [col for col in positive_normalized_data.columns if col.startsw
 
 # Calculating the mean for each housekeeping and negative group
 grouped_data = pd.DataFrame({
-    'Code Class': data['Code Class'],
-    'Name': data['Name'],
-    'Accession': data['Accession'],
+    'Code Class': clean_miRNAs['Code Class'],
+    'Name': clean_miRNAs['Name'],
+    'Accession': clean_miRNAs['Accession'],
     'AF_Mean_HK': housekeeping_normalized_data[hk_af_columns].mean(axis=1),
     'AM_Mean_HK': housekeeping_normalized_data[hk_am_columns].mean(axis=1),
     'FC_Mean_HK': housekeeping_normalized_data[hk_fc_columns].mean(axis=1),
