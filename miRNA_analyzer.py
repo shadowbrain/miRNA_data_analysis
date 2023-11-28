@@ -11,26 +11,26 @@ data.head()
 # Identifying the housekeeping miRNAs in the dataset
 housekeeping_miRNAs = data[data['Code Class'] == 'Housekeeping']
 
-# Checking the first few rows of the housekeeping miRNAs to confirm
+# Checking the first and last few rows of the housekeeping miRNAs to confirm
 print(housekeeping_miRNAs)
 
 # Identifying the negative miRNAs in the dataset
 negative_miRNAs = data[data['Code Class'] == 'Negative']
 
-# Checking the first few rows of the negative miRNAs to confirm
+# Checking the first and last few rows of the negative miRNAs to confirm
 print(negative_miRNAs)
 
 # Identifying the positive miRNAs in the dataset
 positive_miRNAs = data[data['Code Class'] == 'Positive']
 
-# Checking the first few rows of the positive miRNAs to confirm
+# Checking the first and last few rows of the positive miRNAs to confirm
 print(positive_miRNAs)
 
-# Exclude the housekeeping, negative, and positive  to create a clean miRNA dataset
+# Exclude the housekeeping, negative, and positive to create a clean miRNA dataset
 invalid_code_classes = ['Housekeeping', 'Negative', 'Positive']
 clean_miRNAs = data[~data['Code Class'].isin(invalid_code_classes)] 
 
-# Checking the first few rows of the sample miRNAs to confirm
+# Checking the first and last few rows of the clean miRNAs to confirm
 print(clean_miRNAs)
 
 # Extracting the expression data for housekeeping miRNAs
@@ -48,11 +48,17 @@ average_housekeeping_expression = housekeeping_expression.mean()
 # Calculating the average expression of negative miRNAs for each sample
 average_negative_expression = negative_expression.mean()
 
-# Normalizing the expression levels of all clean miRNAs by the average housekeeping expression
+# Calculating the average expression of negative miRNAs for each sample
+average_positive_expression = positive_expression.mean()
+
+# Normalizing the expression levels of all miRNAs by the average housekeeping expression
 housekeeping_normalized_data = clean_miRNAs.iloc[:, 3:].div(average_housekeeping_expression)
 
 # Normalizing the expression levels of all clean miRNAs by the average negative expression
 negative_normalized_data = clean_miRNAs.iloc[:, 3:].div(average_negative_expression)
+
+# Normalizing the expression levels of all clean miRNAs by the average positive expression
+positive_normalized_data = clean_miRNAs.iloc[:, 3:].div(average_positive_expression)
 
 # Adding back the non-expression columns to the housekeeping normalized dataset
 housekeeping_normalized_data.insert(0, 'Accession', data['Accession'])
@@ -70,6 +76,14 @@ negative_normalized_data.insert(0, 'Code Class', data['Code Class'])
 # Displaying the first few rows of the negative normalized dataset
 print(negative_normalized_data)
 
+# Adding back the non-expression columns to the positive normalized dataset
+positive_normalized_data.insert(0, 'Accession', data['Accession'])
+positive_normalized_data.insert(0, 'Name', data['Name'])
+positive_normalized_data.insert(0, 'Code Class', data['Code Class'])
+
+# Displaying the first few rows of the positive normalized dataset
+print(positive_normalized_data)
+
 # Extracting columns for each housekeeping group
 hk_af_columns = [col for col in housekeeping_normalized_data.columns if col.startswith('AF')]
 hk_am_columns = [col for col in housekeeping_normalized_data.columns if col.startswith('AM')]
@@ -82,10 +96,17 @@ neg_am_columns = [col for col in negative_normalized_data.columns if col.startsw
 neg_fc_columns = [col for col in negative_normalized_data.columns if col.startswith('FC')]
 neg_mc_columns = [col for col in negative_normalized_data.columns if col.startswith('MC')]
 
+# Extracting columns for each positive group
+pos_af_columns = [col for col in positive_normalized_data.columns if col.startswith('AF')]
+pos_am_columns = [col for col in positive_normalized_data.columns if col.startswith('AM')]
+pos_fc_columns = [col for col in positive_normalized_data.columns if col.startswith('FC')]
+pos_mc_columns = [col for col in positive_normalized_data.columns if col.startswith('MC')]
+
 # Calculating the mean for each housekeeping and negative group
 grouped_data = pd.DataFrame({
-    'Name': housekeeping_normalized_data['Name'],
-    'Accession': housekeeping_normalized_data['Accession'],
+    'Code Class': data['Code Class'],
+    'Name': data['Name'],
+    'Accession': data['Accession'],
     'AF_Mean_HK': housekeeping_normalized_data[hk_af_columns].mean(axis=1),
     'AM_Mean_HK': housekeeping_normalized_data[hk_am_columns].mean(axis=1),
     'FC_Mean_HK': housekeeping_normalized_data[hk_fc_columns].mean(axis=1),
@@ -94,6 +115,10 @@ grouped_data = pd.DataFrame({
     'AM_Mean_NEG': negative_normalized_data[neg_am_columns].mean(axis=1),
     'FC_Mean_NEG': negative_normalized_data[neg_fc_columns].mean(axis=1),
     'MC_Mean_NEG': negative_normalized_data[neg_mc_columns].mean(axis=1)
+    'AF_Mean_POS': positive_normalized_data[pos_af_columns].mean(axis=1),
+    'AM_Mean_POS': positive_normalized_data[pos_am_columns].mean(axis=1),
+    'FC_Mean_POS': positive_normalized_data[pos_fc_columns].mean(axis=1),
+    'MC_Mean_POS': positive_normalized_data[pos_mc_columns].mean(axis=1)
 })
 
 # Displaying the first few rows of the grouped data
@@ -108,6 +133,10 @@ grouped_data['AF_to_AM_FoldChange_NEG'] = grouped_data['AF_Mean_NEG'] / grouped_
 grouped_data['AF_to_FC_FoldChange_NEG'] = grouped_data['AF_Mean_NEG'] / grouped_data['FC_Mean_NEG']
 grouped_data['AM_to_MC_FoldChange_NEG'] = grouped_data['AM_Mean_NEG'] / grouped_data['MC_Mean_NEG']
 grouped_data['FC_to_MC_FoldChange_NEG'] = grouped_data['FC_Mean_NEG'] / grouped_data['MC_Mean_NEG']
+grouped_data['AF_to_AM_FoldChange_POS'] = grouped_data['AF_Mean_POS'] / grouped_data['AM_Mean_POS']
+grouped_data['AF_to_FC_FoldChange_POS'] = grouped_data['AF_Mean_POS'] / grouped_data['FC_Mean_POS']
+grouped_data['AM_to_MC_FoldChange_POS'] = grouped_data['AM_Mean_POS'] / grouped_data['MC_Mean_POS']
+grouped_data['FC_to_MC_FoldChange_POS'] = grouped_data['FC_Mean_POS'] / grouped_data['MC_Mean_POS']
 
 # Displaying the first few rows of the grouped data with the fold changes
 print(grouped_data)
@@ -128,6 +157,15 @@ def perform_negative_ttest(group1, group2):
         p_values.append(p_val)
     return p_values
 
+# Function to perform t-test between two positive normalized groups
+def perform_positive_ttest(group1, group2):
+    p_values = []
+    for index, row in positive_normalized_data.iterrows():
+        stat, p_val = ttest_ind(row[group1].astype(str).astype(float), row[group2].astype(str).astype(float), nan_policy='omit')
+        p_values.append(p_val)
+    return p_values
+
+
 # Calculating p-values for each comparison
 grouped_data['AF_AM_p_value_HK'] = perform_housekeeping_ttest(hk_af_columns, hk_am_columns)
 grouped_data['AF_FC_p_value_HK'] = perform_housekeeping_ttest(hk_af_columns, hk_fc_columns)
@@ -137,6 +175,10 @@ grouped_data['AF_AM_p_value_NEG'] = perform_negative_ttest(neg_af_columns, neg_a
 grouped_data['AF_FC_p_value_NEG'] = perform_negative_ttest(neg_af_columns, neg_fc_columns)
 grouped_data['AM_MC_p_value_NEG'] = perform_negative_ttest(neg_am_columns, neg_mc_columns)
 grouped_data['FC_MC_p_value_NEG'] = perform_negative_ttest(neg_fc_columns, neg_mc_columns)
+grouped_data['AF_AM_p_value_POS'] = perform_positive_ttest(pos_af_columns, pos_am_columns)
+grouped_data['AF_FC_p_value_POS'] = perform_positive_ttest(pos_af_columns, pos_fc_columns)
+grouped_data['AM_MC_p_value_POS'] = perform_positive_ttest(pos_am_columns, pos_mc_columns)
+grouped_data['FC_MC_p_value_POS'] = perform_positive_ttest(pos_fc_columns, pos_mc_columns)
 
 # Displaying the first few rows of the grouped data with the fold changes and p-values
 print(grouped_data)
@@ -163,6 +205,10 @@ significant_AF_AM_NEG = select_significant_miRNAs(grouped_data, 'AF_to_AM_FoldCh
 significant_AF_FC_NEG = select_significant_miRNAs(grouped_data, 'AF_to_FC_FoldChange_NEG', 'AF_FC_p_value_NEG')
 significant_AM_MC_NEG = select_significant_miRNAs(grouped_data, 'AM_to_MC_FoldChange_NEG', 'AM_MC_p_value_NEG')
 significant_FC_MC_NEG = select_significant_miRNAs(grouped_data, 'FC_to_MC_FoldChange_NEG', 'FC_MC_p_value_NEG')
+significant_AF_AM_POS = select_significant_miRNAs(grouped_data, 'AF_to_AM_FoldChange_POS', 'AF_AM_p_value_POS')
+significant_AF_FC_POS = select_significant_miRNAs(grouped_data, 'AF_to_FC_FoldChange_POS', 'AF_FC_p_value_POS')
+significant_AM_MC_POS = select_significant_miRNAs(grouped_data, 'AM_to_MC_FoldChange_POS', 'AM_MC_p_value_POS')
+significant_FC_MC_POS = select_significant_miRNAs(grouped_data, 'FC_to_MC_FoldChange_POS', 'FC_MC_p_value_POS')
 
 # Summarizing the results
 significant_summary = {
@@ -173,7 +219,11 @@ significant_summary = {
     'AF_vs_AM_NEG': significant_AF_AM_NEG[['Name', 'Accession', 'AF_Mean_NEG', 'AM_Mean_NEG', 'AF_to_AM_FoldChange_NEG', 'AF_AM_p_value_NEG']],
     'AF_vs_FC_NEG': significant_AF_FC_NEG[['Name', 'Accession', 'AF_Mean_NEG', 'FC_Mean_NEG', 'AF_to_FC_FoldChange_NEG', 'AF_FC_p_value_NEG']],
     'AM_vs_MC_NEG': significant_AM_MC_NEG[['Name', 'Accession', 'AM_Mean_NEG', 'MC_Mean_NEG', 'AM_to_MC_FoldChange_NEG', 'AM_MC_p_value_NEG']],
-    'FC_vs_MC_NEG': significant_FC_MC_NEG[['Name', 'Accession', 'FC_Mean_NEG', 'MC_Mean_NEG', 'FC_to_MC_FoldChange_NEG', 'FC_MC_p_value_NEG']]
+    'FC_vs_MC_NEG': significant_FC_MC_NEG[['Name', 'Accession', 'FC_Mean_NEG', 'MC_Mean_NEG', 'FC_to_MC_FoldChange_NEG', 'FC_MC_p_value_NEG']],
+    'AF_vs_AM_POS': significant_AF_AM_POS[['Name', 'Accession', 'AF_Mean_POS', 'AM_Mean_POS', 'AF_to_AM_FoldChange_POS', 'AF_AM_p_value_POS']],
+    'AF_vs_FC_POS': significant_AF_FC_POS[['Name', 'Accession', 'AF_Mean_POS', 'FC_Mean_POS', 'AF_to_FC_FoldChange_POS', 'AF_FC_p_value_POS']],
+    'AM_vs_MC_POS': significant_AM_MC_POS[['Name', 'Accession', 'AM_Mean_POS', 'MC_Mean_POS', 'AM_to_MC_FoldChange_POS', 'AM_MC_p_value_POS']],
+    'FC_vs_MC_POS': significant_FC_MC_POS[['Name', 'Accession', 'FC_Mean_POS', 'MC_Mean_POS', 'FC_to_MC_FoldChange_POS', 'FC_MC_p_value_POS']]
 }
 
 # Output the results summary
@@ -188,9 +238,6 @@ print("==========================================================")
 
 # Concatenate all DataFrames into a single DataFrame
 all_significant_miRNAs = pd.concat(significant_summary.values(), ignore_index=True)
-
-# Now all_significant_miRNAs is a DataFrame containing all the significant miRNAs
-# with an additional 'Comparison' column indicating the comparison group
 
 # File path for the significant results
 significant_results_summary_file_path = './significant_miRNA_results_summary.csv'
