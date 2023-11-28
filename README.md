@@ -44,7 +44,7 @@ Before you run this script, please ensure that:
    - Calculates p-values for these comparisons.
 
 5. **Identification of Significant miRNAs**:
-   - Selects miRNAs with significant fold changes (threshold > 2 or < 0.5) and low p-values (threshold < 0.1).
+   - Selects miRNAs with significant fold changes (threshold > 2) and low p-values (threshold < 0.1).
    - Summarizes these significant miRNAs in a dictionary.
 
 6. **Results Aggregation and Export**:
