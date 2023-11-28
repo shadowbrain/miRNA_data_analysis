@@ -21,7 +21,7 @@ Before you run this script, please ensure that:
 
 ## Script Overview
 **Filename**: miRNA_analyzer.py  
-**Description**: This script analyzes microRNA (miRNA) expression data to identify significant changes in expression levels between different sample groups. It performs normalization using housekeeping and negative miRNAs, calculates fold changes, performs t-tests, and identifies significant miRNAs based on fold change and p-value thresholds.
+**Description**: This script analyzes microRNA (miRNA) expression data to identify significant changes in expression levels between different sample groups. It performs normalization using housekeeping, negative, and positive miRNAs, calculates fold changes, performs t-tests, and identifies significant miRNAs based on fold change and p-value thresholds.
 
 ## Dependencies
 - pandas: For data manipulation and analysis.
@@ -31,11 +31,11 @@ Before you run this script, please ensure that:
 1. **Data Loading**: The script starts by loading miRNA expression data from a CSV file.
 
 2. **Normalization**:
-   - It identifies housekeeping and negative miRNAs.
+   - It identifies housekeeping, negative, and positive miRNAs in the input data set.
    - Normalizes the expression data using average expressions of these miRNAs.
 
 3. **Grouping and Fold Change Calculation**:
-   - The script groups the data by sample types (AF, AM, FC, MC) for both normalization methods.
+   - The script groups the data by sample types (AF, AM, FC, MC) for all normalization methods.
    - Calculates the mean expression values for each group.
    - Computes fold changes between different sample groups.
 
@@ -62,6 +62,11 @@ Calculates p-values using t-tests for housekeeping normalized groups.
 
 ### `perform_negative_ttest(group1, group2)`
 Calculates p-values using t-tests for negative normalized groups.
+
+*Parameters and returns are similar to `perform_housekeeping_ttest`.*
+
+### `perform_positive_ttest(group1, group2)`
+Calculates p-values using t-tests for positive normalized groups.
 
 *Parameters and returns are similar to `perform_housekeeping_ttest`.*
 
