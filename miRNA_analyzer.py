@@ -181,7 +181,6 @@ grouped_data['FC_MC_p_value_POS'] = perform_ttest(positive_normalized_data, pos_
 # Displaying the first few rows of the grouped data with the fold changes and p-values
 print(grouped_data)
 
-
 # Do some quick analysis to check the data for significant miRNAs
 # Criteria for selection
 fold_change_threshold = 2
@@ -190,8 +189,8 @@ p_value_threshold = 0.1
 # Function to select miRNAs based on fold change and p-value criteria
 def select_significant_miRNAs(data_grouped, fold_change_column, p_value_column):
     significant_miRNAs = data_grouped[
-        (data[fold_change_column].abs() >= fold_change_threshold) & 
-        (data[p_value_column] < p_value_threshold)
+        (data_grouped[fold_change_column].abs() >= fold_change_threshold) & 
+        (data_grouped[p_value_column] < p_value_threshold)
     ]
     return significant_miRNAs
 
