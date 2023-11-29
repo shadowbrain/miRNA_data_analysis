@@ -253,7 +253,10 @@ p_values = grouped_data[p_value_columns].values.flatten()
 rounded_p_values = p_values.round(2)
 
 # Calculate distribution
-p_value_distribution = pd.Series(rounded_p_values).value_counts().sort_index()
+p_value_distribution = pd.Series(rounded_p_values).value_counts().sort_index().reset_index()
+
+# Rename columns
+p_value_distribution.columns = ['P-Value', 'Count']
 
 # Output the distribution for validation
 print("__________________________________________________________")
@@ -265,7 +268,7 @@ print("==========================================================")
 p_value_distribution_file_path = './pvalues_miRNA_distribution.csv'
 
 # Saving the data to a CSV file
-p_value_distribution.to_csv(p_value_distribution_file_path)
+p_value_distribution.to_csv(p_value_distribution_file_path, index=False)
 
 # Concatenate all DataFrames into a single DataFrame
 all_significant_miRNAs = pd.concat(significant_summary.values(), ignore_index=True)
