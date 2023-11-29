@@ -53,6 +53,12 @@ Before you run this script, please ensure that:
    - Aggregates significant miRNAs from all comparisons into a single DataFrame.
    - Exports this aggregated data and the full grouped dataset with fold changes and p-values to CSV files.
 
+7. **P-Value Distribution Analysis**:
+    - Extracts all p-value columns from the results.
+    - Rounds the p-values to the nearest 0.01 to refine the granularity of analysis.
+    - Calculates the frequency distribution of these rounded p-values, providing insights into the statistical characteristics of the dataset.
+    - Outputs this distribution for review and also saves it to a CSV file.
+
 ## Functions
 ### `perform_ttest(data_normalized, group1, group2)`
 Calculates p-values using t-tests for normalized groups.
