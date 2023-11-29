@@ -243,9 +243,29 @@ print("-------------Summary of Significant miRNAs----------------")
 print(significant_summary)
 print("==========================================================")
 
-# Convert each DataFrame in the dictionary to include a 'Comparison' column
-#for comparison, df in significant_summary.items():
-#    df['Comparison'] = comparison
+
+# Check the statistical distribution of p-values in the data
+# Extract all p-value columns
+p_value_columns = [col for col in grouped_data.columns if 'p_value' in col]
+p_values = grouped_data[p_value_columns].values.flatten()
+
+# Round p-values to the nearest 0.00
+rounded_p_values = p_values.round(2)
+
+# Calculate distribution
+p_value_distribution = pd.Series(rounded_p_values).value_counts().sort_index()
+
+# Output the distribution for validation
+print("__________________________________________________________")
+print("-----------P-Values Statistical Distribution--------------")
+print(p_value_distribution)
+print("==========================================================")
+
+# File path for the p-values distribution results
+p_value_distribution_file_path = './pvalues_miRNA_distribution.csv'
+
+# Saving the data to a CSV file
+p_value_distribution.to_csv(p_value_distribution_file_path)
 
 # Concatenate all DataFrames into a single DataFrame
 all_significant_miRNAs = pd.concat(significant_summary.values(), ignore_index=True)
