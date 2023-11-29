@@ -5,26 +5,39 @@ from scipy.stats import ttest_ind
 file_path = './AllCartridges_forNanoStringDiff.csv'
 data = pd.read_csv(file_path)
 
+# Set the identified "stable" reference miRNAs (found via external tools such as RefFinder ( http://blooge.cn/RefFinder/ ))
+stable_housekeeping_miRNAs = ['RPL19', 'RPLP0', 'GAPDH']
+stable_negative_miRNAs = ['NEG_G', 'NEG_D', 'NEG_A']
+stable_positive_miRNAs = ['POS_C', 'POS_F', 'POS_D']
+
 # Display the first few rows of the dataset to understand its structure
 data.head()
 
-# Identifying the housekeeping miRNAs in the dataset
-housekeeping_miRNAs = data[data['Code Class'] == 'Housekeeping']
+
+
+# Identifying the stable housekeeping miRNAs in the dataset
+all_housekeeping_miRNAs = data[data['Code Class'] == 'Housekeeping']
+housekeeping_miRNAs = all_housekeeping_miRNAs[all_housekeeping_miRNAs['Name'].isin(stable_housekeeping_miRNAs)]
 
 # Checking the first and last few rows of the housekeeping miRNAs to confirm
 print(housekeeping_miRNAs)
 
-# Identifying the negative miRNAs in the dataset
-negative_miRNAs = data[data['Code Class'] == 'Negative']
+
+# Identifying the stable negative miRNAs in the dataset
+all_negative_miRNAs = data[data['Code Class'] == 'Negative']
+negative_miRNAs = all_negative_miRNAs[all_negative_miRNAs['Name'].isin(stable_negative_miRNAs)]
 
 # Checking the first and last few rows of the negative miRNAs to confirm
 print(negative_miRNAs)
 
+
 # Identifying the positive miRNAs in the dataset
-positive_miRNAs = data[data['Code Class'] == 'Positive']
+all_positive_miRNAs = data[data['Code Class'] == 'Positive']
+positive_miRNAs = all_positive_miRNAs[all_positive_miRNAs['Name'].isin(stable_positive_miRNAs)]
 
 # Checking the first and last few rows of the positive miRNAs to confirm
 print(positive_miRNAs)
+
 
 # Exclude the housekeeping, negative, and positive to create a clean miRNA dataset
 invalid_code_classes = ['Housekeeping', 'Negative', 'Positive']
@@ -32,6 +45,7 @@ clean_miRNAs = data[~data['Code Class'].isin(invalid_code_classes)]
 
 # Checking the first and last few rows of the clean miRNAs to confirm
 print(clean_miRNAs)
+
 
 # Extracting the expression data for housekeeping miRNAs
 housekeeping_expression = housekeeping_miRNAs.iloc[:, 3:]
@@ -141,47 +155,32 @@ grouped_data['FC_to_MC_FoldChange_POS'] = grouped_data['FC_Mean_POS'] / grouped_
 # Displaying the first few rows of the grouped data with the fold changes
 print(grouped_data)
 
-# Function to perform t-test between two housekeeping normalized groups
-def perform_housekeeping_ttest(group1, group2):
+
+# Function to perform t-test between two normalized groups
+def perform_ttest(data_normalized, group1, group2):
     p_values = []
-    for index, row in housekeeping_normalized_data.iterrows():
+    for index, row in data_normalized.iterrows():
         stat, p_val = ttest_ind(row[group1].astype(str).astype(float), row[group2].astype(str).astype(float), nan_policy='omit')
         p_values.append(p_val)
     return p_values
-
-# Function to perform t-test between two negative normalized groups
-def perform_negative_ttest(group1, group2):
-    p_values = []
-    for index, row in negative_normalized_data.iterrows():
-        stat, p_val = ttest_ind(row[group1].astype(str).astype(float), row[group2].astype(str).astype(float), nan_policy='omit')
-        p_values.append(p_val)
-    return p_values
-
-# Function to perform t-test between two positive normalized groups
-def perform_positive_ttest(group1, group2):
-    p_values = []
-    for index, row in positive_normalized_data.iterrows():
-        stat, p_val = ttest_ind(row[group1].astype(str).astype(float), row[group2].astype(str).astype(float), nan_policy='omit')
-        p_values.append(p_val)
-    return p_values
-
 
 # Calculating p-values for each comparison
-grouped_data['AF_AM_p_value_HK'] = perform_housekeeping_ttest(hk_af_columns, hk_am_columns)
-grouped_data['AF_FC_p_value_HK'] = perform_housekeeping_ttest(hk_af_columns, hk_fc_columns)
-grouped_data['AM_MC_p_value_HK'] = perform_housekeeping_ttest(hk_am_columns, hk_mc_columns)
-grouped_data['FC_MC_p_value_HK'] = perform_housekeeping_ttest(hk_fc_columns, hk_mc_columns)
-grouped_data['AF_AM_p_value_NEG'] = perform_negative_ttest(neg_af_columns, neg_am_columns)
-grouped_data['AF_FC_p_value_NEG'] = perform_negative_ttest(neg_af_columns, neg_fc_columns)
-grouped_data['AM_MC_p_value_NEG'] = perform_negative_ttest(neg_am_columns, neg_mc_columns)
-grouped_data['FC_MC_p_value_NEG'] = perform_negative_ttest(neg_fc_columns, neg_mc_columns)
-grouped_data['AF_AM_p_value_POS'] = perform_positive_ttest(pos_af_columns, pos_am_columns)
-grouped_data['AF_FC_p_value_POS'] = perform_positive_ttest(pos_af_columns, pos_fc_columns)
-grouped_data['AM_MC_p_value_POS'] = perform_positive_ttest(pos_am_columns, pos_mc_columns)
-grouped_data['FC_MC_p_value_POS'] = perform_positive_ttest(pos_fc_columns, pos_mc_columns)
+grouped_data['AF_AM_p_value_HK'] = perform_ttest(housekeeping_normalized_data, hk_af_columns, hk_am_columns)
+grouped_data['AF_FC_p_value_HK'] = perform_ttest(housekeeping_normalized_data, hk_af_columns, hk_fc_columns)
+grouped_data['AM_MC_p_value_HK'] = perform_ttest(housekeeping_normalized_data, hk_am_columns, hk_mc_columns)
+grouped_data['FC_MC_p_value_HK'] = perform_ttest(housekeeping_normalized_data, hk_fc_columns, hk_mc_columns)
+grouped_data['AF_AM_p_value_NEG'] = perform_ttest(negative_normalized_data, neg_af_columns, neg_am_columns)
+grouped_data['AF_FC_p_value_NEG'] = perform_ttest(negative_normalized_data, neg_af_columns, neg_fc_columns)
+grouped_data['AM_MC_p_value_NEG'] = perform_ttest(negative_normalized_data, neg_am_columns, neg_mc_columns)
+grouped_data['FC_MC_p_value_NEG'] = perform_ttest(negative_normalized_data, neg_fc_columns, neg_mc_columns)
+grouped_data['AF_AM_p_value_POS'] = perform_ttest(positive_normalized_data, pos_af_columns, pos_am_columns)
+grouped_data['AF_FC_p_value_POS'] = perform_ttest(positive_normalized_data, pos_af_columns, pos_fc_columns)
+grouped_data['AM_MC_p_value_POS'] = perform_ttest(positive_normalized_data, pos_am_columns, pos_mc_columns)
+grouped_data['FC_MC_p_value_POS'] = perform_ttest(positive_normalized_data, pos_fc_columns, pos_mc_columns)
 
 # Displaying the first few rows of the grouped data with the fold changes and p-values
 print(grouped_data)
+
 
 # Do some quick analysis to check the data for significant miRNAs
 # Criteria for selection
@@ -189,8 +188,8 @@ fold_change_threshold = 2
 p_value_threshold = 0.1
 
 # Function to select miRNAs based on fold change and p-value criteria
-def select_significant_miRNAs(data, fold_change_column, p_value_column):
-    significant_miRNAs = data[
+def select_significant_miRNAs(data_grouped, fold_change_column, p_value_column):
+    significant_miRNAs = data_grouped[
         (data[fold_change_column].abs() >= fold_change_threshold) & 
         (data[p_value_column] < p_value_threshold)
     ]
