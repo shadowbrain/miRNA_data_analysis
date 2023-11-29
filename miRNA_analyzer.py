@@ -1,8 +1,22 @@
 import pandas as pd
 from scipy.stats import ttest_ind
+import sys
+import os
 
-# Load the data from the uploaded CSV file
-file_path = './AllCartridges_forNanoStringDiff.csv'
+# Check if the correct number of arguments is provided
+if len(sys.argv) != 2:
+    print("Usage: miRNA_analyzer.py <file_path>")
+else:
+    file_path = sys.argv[1]
+
+    # Check if the provided file path exists
+    if os.path.exists(file_path):
+        print("File path provided:", file_path)
+    else:
+        print("Please provide the path to the Nanostring data file as a command-line argument.")
+        print("The provided file path does not exist.")
+
+# Load the data from the CSV file provided at the command line
 data = pd.read_csv(file_path)
 
 # Set the identified "stable" reference miRNAs (found via external tools such as RefFinder ( http://blooge.cn/RefFinder/ ))
@@ -12,7 +26,6 @@ stable_positive_miRNAs = ['POS_C', 'POS_F', 'POS_D']
 
 # Display the first few rows of the dataset to understand its structure
 data.head()
-
 
 
 # Identifying the stable housekeeping miRNAs in the dataset
