@@ -1,10 +1,20 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
+
+# Access command-line arguments using sys.argv
+# sys.argv[0] is the script name, and subsequent elements are arguments
+if len(sys.argv) >= 2:
+    argument1 = sys.argv[1]  # First argument
+    print("File_Path: ", argument1)
+else:
+    print("Please provide the path to the data file to be visualized.")
+    print("Usage: miRNA_visualizer.py [Path_to_File]")
 
 
-# Load your data
-data = pd.read_csv('./grouped_miRNA_folded_pvalues.csv')
+# Load your data from the specified file
+data = pd.read_csv(argument1)
 
 # Create a volcano plot assuming your data has 'Fold_Change' and 'p_Value' columns
 plt.scatter(data['AF_to_AM_FoldChange_HK'], -np.log10(data['AF_AM_p_value_HK']), c='blue', alpha=0.5)
