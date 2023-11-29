@@ -6,8 +6,8 @@
 This code is a comprehensive script for performing a variety of tasks with your NanoString data, including:
 
 - Loading the data and performing initial checks.
-- Identifying housekeeping, negative, and positive control miRNAs.
-- Normalizing expression levels to both housekeeping and negative controls.
+- Identifying housekeeping, negative, and positive control miRNAs from a list of externally calculated stable miRNAs.
+- Normalizing expression levels to housekeeping, negative, and positive controls.
 - Calculating average expression and fold changes between groups.
 - Performing t-tests to assess statistical differences between groups.
 - Creates a summary of "significant" results as defined by the fold change and p-value threshhold variables (defaults: foldchange >= 2, p-value <= 0.1)
@@ -15,7 +15,7 @@ This code is a comprehensive script for performing a variety of tasks with your 
 
 Before you run this script, please ensure that:
 
-1. Your dataset 'AllCartridges_forNanoStringDiff.csv' is correctly formatted and includes 'Code Class', 'Accession', 'Name', and the expression columns with appropriate headers.
+1. Your dataset is correctly formatted and includes 'Code Class', 'Accession', 'Name', and the expression columns with appropriate headers.
 2. The expression columns for the samples should be prefixed appropriately so that the script can differentiate between different groups (AF, AM, FC, MC).
 3. You have installed the required Python packages (`pandas` and `scipy`) in your environment.
 
@@ -28,7 +28,9 @@ Before you run this script, please ensure that:
 - scipy.stats: Specifically `ttest_ind` for performing independent t-tests.
 
 ## Script Workflow
-1. **Data Loading**: The script starts by loading miRNA expression data from a CSV file.
+1. **Data Loading and Initial Processing**:
+   - Loads miRNA data from the provided CSV file into a pandas DataFrame.
+   - Sets predefined lists of stable reference miRNAs, including housekeeping, negative, and positive miRNAs.
 
 2. **Normalization**:
    - It identifies housekeeping, negative, and positive miRNAs in the input data set.
@@ -52,29 +54,20 @@ Before you run this script, please ensure that:
    - Exports this aggregated data and the full grouped dataset with fold changes and p-values to CSV files.
 
 ## Functions
-### `perform_housekeeping_ttest(group1, group2)`
-Calculates p-values using t-tests for housekeeping normalized groups.
+### `perform_ttest(data_normalized, group1, group2)`
+Calculates p-values using t-tests for normalized groups.
 
 **Parameters**:
+- `data_normalized`: DataFrame containing grouped & normalized data (e.g. housekeeping_normalized_miRNAs)
 - `group1`, `group2`: Column names of the groups to be compared.
 
 **Returns**: List of p-values for each miRNA.
 
-### `perform_negative_ttest(group1, group2)`
-Calculates p-values using t-tests for negative normalized groups.
-
-*Parameters and returns are similar to `perform_housekeeping_ttest`.*
-
-### `perform_positive_ttest(group1, group2)`
-Calculates p-values using t-tests for positive normalized groups.
-
-*Parameters and returns are similar to `perform_housekeeping_ttest`.*
-
-### `select_significant_miRNAs(data, fold_change_column, p_value_column)`
+### `select_significant_miRNAs(data_grouped, fold_change_column, p_value_column)`
 Selects miRNAs that meet specified fold change and p-value thresholds.
 
 **Parameters**:
-- `data`: DataFrame containing miRNA expression data.
+- `data_grouped`: DataFrame containing miRNA expression data.
 - `fold_change_column`: Column name for fold change values.
 - `p_value_column`: Column name for p-values.
 
