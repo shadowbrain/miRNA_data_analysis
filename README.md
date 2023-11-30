@@ -30,7 +30,7 @@ Before you run this script, please ensure that:
 ## Script Workflow
 1. **Data Loading and Initial Processing**:
    - Loads miRNA data from the provided CSV file into a pandas DataFrame.
-   - Sets predefined lists of stable reference miRNAs, including housekeeping, negative, and positive miRNAs.
+   - Sets lists of stable reference miRNAs, including housekeeping, negative, and positive miRNAs from the provided inputs.
 
 2. **Normalization**:
    - It identifies housekeeping, negative, and positive miRNAs in the input data set.
@@ -81,4 +81,5 @@ Selects miRNAs that meet specified fold change and p-value thresholds.
 
 ## Usage
 Run the script in a Python environment where all dependencies are installed. Ensure the input CSV file path is correctly specified.
+The script can accept additional optional arguments to provide a list of stable housekeeping miRNAs, stable negative miRNAs, and stable positive miRNAs otherwise it will prompt the user for these values.
 
