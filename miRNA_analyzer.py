@@ -1,28 +1,44 @@
-import pandas as pd
-from scipy.stats import ttest_ind
 import sys
 import os
+import argparse
+import pandas as pd
+from scipy.stats import ttest_ind
 
-# Check if the correct number of arguments is provided
-if len(sys.argv) != 2:
-    print("Usage: miRNA_analyzer.py <file_path>")
-else:
-    file_path = sys.argv[1]
+# Setup argument parser
+parser = argparse.ArgumentParser(description='miRNA Analyzer Script')
+parser.add_argument('file_path', type=str, help='Path to the CSV file containing miRNA data')
+parser.add_argument('--stablehk', type=str, help='Space-separated list of stable housekeeping miRNAs')
+parser.add_argument('--stableneg', type=str, help='Space-separated list of stable negative miRNAs')
+parser.add_argument('--stablepos', type=str, help='Space-separated list of stable positive miRNAs')
 
-    # Check if the provided file path exists
-    if os.path.exists(file_path):
-        print("File path provided:", file_path)
-    else:
-        print("Please provide the path to the Nanostring data file as a command-line argument.")
-        print("The provided file path does not exist.")
+# Parse arguments
+args = parser.parse_args()
+
+# Function to prompt for input or use default
+def prompt_for_mirnas(prompt, default):
+    return input(f"{prompt} [default: {', '.join(default)}]: ") or default
+
+# Default lists of miRNAs
+default_stable_hk = ['RPL19', 'RPLP0', 'GAPDH']
+default_stable_neg = ['NEG_G', 'NEG_D', 'NEG_A']
+default_stable_pos = ['POS_C', 'POS_F', 'POS_D']
+
+# File path is a required argument
+file_path = args.file_path
+
+# Set the identified "stable" reference miRNAs (found via external tools such as RefFinder ( http://blooge.cn/RefFinder/ ))
+# Use arguments if provided, otherwise prompt
+stable_housekeeping_miRNAs = args.stablehk.split() if args.stablehk else prompt_for_mirnas("Stable Housekeeping miRNAs", default_stable_hk)
+stable_negative_miRNAs = args.stableneg.split() if args.stableneg else prompt_for_mirnas("Stable Negative miRNAs", default_stable_neg)
+stable_positive_miRNAs = args.stablepos.split() if args.stablepos else prompt_for_mirnas("Stable Positive miRNAs", default_stable_pos)
 
 # Load the data from the CSV file provided at the command line
 data = pd.read_csv(file_path)
 
 # Set the identified "stable" reference miRNAs (found via external tools such as RefFinder ( http://blooge.cn/RefFinder/ ))
-stable_housekeeping_miRNAs = ['RPL19', 'RPLP0', 'GAPDH']
-stable_negative_miRNAs = ['NEG_G', 'NEG_D', 'NEG_A']
-stable_positive_miRNAs = ['POS_C', 'POS_F', 'POS_D']
+#stable_housekeeping_miRNAs = ['RPL19', 'RPLP0', 'GAPDH']
+#stable_negative_miRNAs = ['NEG_G', 'NEG_D', 'NEG_A']
+#stable_positive_miRNAs = ['POS_C', 'POS_F', 'POS_D']
 
 # Display the first few rows of the dataset to understand its structure
 data.head()
