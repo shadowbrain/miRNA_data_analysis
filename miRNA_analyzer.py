@@ -19,9 +19,9 @@ def prompt_for_mirnas(prompt, default):
     return input(f"{prompt} [default: {', '.join(default)}]: ") or default
 
 # Default lists of miRNAs
-default_stable_hk = ['RPL19', 'RPLP0', 'GAPDH']
-default_stable_neg = ['NEG_G', 'NEG_D', 'NEG_A']
-default_stable_pos = ['POS_C', 'POS_F', 'POS_D']
+default_stable_hk = ['RPL19', 'RPLP0', 'GAPDH', 'ACTB']
+default_stable_neg = ['NEG_G', 'NEG_D', 'NEG_A', 'NEG_B']
+default_stable_pos = ['POS_C', 'POS_F', 'POS_B', 'POS_A']
 
 # File path is a required argument
 file_path = args.file_path
@@ -34,11 +34,6 @@ stable_positive_miRNAs = args.stablepos.split() if args.stablepos else prompt_fo
 
 # Load the data from the CSV file provided at the command line
 data = pd.read_csv(file_path)
-
-# Set the identified "stable" reference miRNAs (found via external tools such as RefFinder ( http://blooge.cn/RefFinder/ ))
-#stable_housekeeping_miRNAs = ['RPL19', 'RPLP0', 'GAPDH']
-#stable_negative_miRNAs = ['NEG_G', 'NEG_D', 'NEG_A']
-#stable_positive_miRNAs = ['POS_C', 'POS_F', 'POS_D']
 
 # Display the first few rows of the dataset to understand its structure
 data.head()
