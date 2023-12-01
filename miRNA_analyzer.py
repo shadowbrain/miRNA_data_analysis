@@ -234,24 +234,29 @@ significant_FC_MC_POS = select_significant_miRNAs(grouped_data, 'FC_to_MC_FoldCh
 
 # Summarizing the results
 significant_summary = {
-    'AF_vs_AM_HK': significant_AF_AM_HK[['Name', 'Accession', 'AF_Mean_HK', 'AM_Mean_HK', 'AF_to_AM_FoldChange_HK', 'AF_AM_p_value_HK']],
-    'AF_vs_FC_HK': significant_AF_FC_HK[['Name', 'Accession', 'AF_Mean_HK', 'FC_Mean_HK', 'AF_to_FC_FoldChange_HK', 'AF_FC_p_value_HK']],
-    'AM_vs_MC_HK': significant_AM_MC_HK[['Name', 'Accession', 'AM_Mean_HK', 'MC_Mean_HK', 'AM_to_MC_FoldChange_HK', 'AM_MC_p_value_HK']],
-    'FC_vs_MC_HK': significant_FC_MC_HK[['Name', 'Accession', 'FC_Mean_HK', 'MC_Mean_HK', 'FC_to_MC_FoldChange_HK', 'FC_MC_p_value_HK']],
-    'AF_vs_AM_NEG': significant_AF_AM_NEG[['Name', 'Accession', 'AF_Mean_NEG', 'AM_Mean_NEG', 'AF_to_AM_FoldChange_NEG', 'AF_AM_p_value_NEG']],
-    'AF_vs_FC_NEG': significant_AF_FC_NEG[['Name', 'Accession', 'AF_Mean_NEG', 'FC_Mean_NEG', 'AF_to_FC_FoldChange_NEG', 'AF_FC_p_value_NEG']],
-    'AM_vs_MC_NEG': significant_AM_MC_NEG[['Name', 'Accession', 'AM_Mean_NEG', 'MC_Mean_NEG', 'AM_to_MC_FoldChange_NEG', 'AM_MC_p_value_NEG']],
-    'FC_vs_MC_NEG': significant_FC_MC_NEG[['Name', 'Accession', 'FC_Mean_NEG', 'MC_Mean_NEG', 'FC_to_MC_FoldChange_NEG', 'FC_MC_p_value_NEG']],
-    'AF_vs_AM_POS': significant_AF_AM_POS[['Name', 'Accession', 'AF_Mean_POS', 'AM_Mean_POS', 'AF_to_AM_FoldChange_POS', 'AF_AM_p_value_POS']],
-    'AF_vs_FC_POS': significant_AF_FC_POS[['Name', 'Accession', 'AF_Mean_POS', 'FC_Mean_POS', 'AF_to_FC_FoldChange_POS', 'AF_FC_p_value_POS']],
-    'AM_vs_MC_POS': significant_AM_MC_POS[['Name', 'Accession', 'AM_Mean_POS', 'MC_Mean_POS', 'AM_to_MC_FoldChange_POS', 'AM_MC_p_value_POS']],
-    'FC_vs_MC_POS': significant_FC_MC_POS[['Name', 'Accession', 'FC_Mean_POS', 'MC_Mean_POS', 'FC_to_MC_FoldChange_POS', 'FC_MC_p_value_POS']]
+    'AF_vs_AM_HK': significant_AF_AM_HK[['Name', 'AF_to_AM_FoldChange_HK', 'AF_AM_p_value_HK']],
+    'AF_vs_FC_HK': significant_AF_FC_HK[['Name', 'AF_to_FC_FoldChange_HK', 'AF_FC_p_value_HK']],
+    'AM_vs_MC_HK': significant_AM_MC_HK[['Name', 'AM_to_MC_FoldChange_HK', 'AM_MC_p_value_HK']],
+    'FC_vs_MC_HK': significant_FC_MC_HK[['Name', 'FC_to_MC_FoldChange_HK', 'FC_MC_p_value_HK']],
+    'AF_vs_AM_NEG': significant_AF_AM_NEG[['Name', 'AF_to_AM_FoldChange_NEG', 'AF_AM_p_value_NEG']],
+    'AF_vs_FC_NEG': significant_AF_FC_NEG[['Name', 'AF_to_FC_FoldChange_NEG', 'AF_FC_p_value_NEG']],
+    'AM_vs_MC_NEG': significant_AM_MC_NEG[['Name', 'AM_to_MC_FoldChange_NEG', 'AM_MC_p_value_NEG']],
+    'FC_vs_MC_NEG': significant_FC_MC_NEG[['Name', 'FC_to_MC_FoldChange_NEG', 'FC_MC_p_value_NEG']],
+    'AF_vs_AM_POS': significant_AF_AM_POS[['Name', 'AF_to_AM_FoldChange_POS', 'AF_AM_p_value_POS']],
+    'AF_vs_FC_POS': significant_AF_FC_POS[['Name', 'AF_to_FC_FoldChange_POS', 'AF_FC_p_value_POS']],
+    'AM_vs_MC_POS': significant_AM_MC_POS[['Name', 'AM_to_MC_FoldChange_POS', 'AM_MC_p_value_POS']],
+    'FC_vs_MC_POS': significant_FC_MC_POS[['Name', 'FC_to_MC_FoldChange_POS', 'FC_MC_p_value_POS']]
 }
+
+# Filter out empty DataFrames
+significant_summary = {key: df for key, df in significant_summary.items() if not df.empty}
 
 # Output the results summary
 print("__________________________________________________________")
 print("-------------Summary of Significant miRNAs----------------")
-print(significant_summary)
+for key, df in significant_summary.items():
+    print(f"\n{key}:")
+    print(df)
 print("==========================================================")
 
 
